@@ -50,7 +50,7 @@ gocd.janitor {
 
  # (Optional) Remove logs. It means "cruise-output" (with log files) are whitelisted or not. Default value is false so no change from the current behaviour.
  remove-logs = true
- # Delete logs which are older than x days. Default value is 0, it means no logs according to days will be removed.
+ # (Optional) Delete logs which are older than x days. Default value is 0, it means no logs according to days will be removed.
  delete-logs-older-than-days = 90
  # (Optional) Force remove log files from old (removed) pipelines. Default value is false, it means logs files will be removed according to previous options (days filter) if they are applied.
  force-remove-old-pipeline-logs = true
