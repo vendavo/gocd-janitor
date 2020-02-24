@@ -24,7 +24,7 @@ public class JanitorConfiguration {
     private List<PipelineConfig> pipelines;
     private Set<String> pipelineNames;
     private String pipelinePrefix;
-    private Integer deletedLogsInDays;
+    private int deletedLogsInDays;
     private boolean removeLogs;
     private boolean forceRemoveOldPipelineLogs;
 
@@ -62,7 +62,7 @@ public class JanitorConfiguration {
         return removeLogs;
     }
 
-    public Integer getDeletedLogsInDays() {
+    public int getDeletedLogsInDays() {
         return deletedLogsInDays;
     }
 

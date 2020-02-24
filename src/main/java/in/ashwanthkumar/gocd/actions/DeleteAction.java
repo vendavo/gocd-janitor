@@ -71,7 +71,7 @@ public class DeleteAction implements Action {
                     if (!FileUtils.isSymlink(file) && isNotWhiteListed(file)) {
 
                         if (file.isDirectory()) {
-                            if (!force && (janitorConfiguration.getDeletedLogsInDays() > 0 && isDirLog(file) && !checkDateOfLog(file))) {
+                            if (!force && (janitorConfiguration.getDeletedLogsInDays() > 0 && isDirLog(file) && retainFile(file))) {
                                 //NOACTION
                             } else {
                                 stats.add(getDirectoryStats(file, force));
@@ -95,7 +95,7 @@ public class DeleteAction implements Action {
             for (File file : files) {
                 if (isNotWhiteListed(file)) {
                     if (file.isDirectory()) {
-                        if (!force && (janitorConfiguration.getDeletedLogsInDays() > 0 && isDirLog(file) && !checkDateOfLog(file))) {
+                        if (!force && (janitorConfiguration.getDeletedLogsInDays() > 0 && isDirLog(file) && retainFile(file))) {
                             continue;
                         }
                         deleteDirectory(file, force);
@@ -122,9 +122,9 @@ public class DeleteAction implements Action {
         return file.getName().contains("cruise-output");
     }
 
-    private boolean checkDateOfLog(File file) {
+    private boolean retainFile(File file) {
         long diff = new Date().getTime() - file.lastModified();
-        return diff < janitorConfiguration.getDeletedLogsInDays() * 24 * 60 * 60 * 1000;
+        return diff < (long) janitorConfiguration.getDeletedLogsInDays() * 24 * 60 * 60 * 1000;
 
     }
 
