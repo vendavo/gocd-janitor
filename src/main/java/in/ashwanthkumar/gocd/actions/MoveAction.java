@@ -17,7 +17,7 @@ public class MoveAction implements Action {
     }
 
     @Override
-    public long invoke(File pipelineDir, String version, boolean dryRun) {
+    public long invoke(File pipelineDir, String version, boolean dryRun, boolean force) {
         File versionDir = new File(pipelineDir.getAbsolutePath() + "/" + version);
         long size;
         try {

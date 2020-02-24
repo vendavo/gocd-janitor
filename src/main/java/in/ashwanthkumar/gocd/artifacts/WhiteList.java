@@ -2,7 +2,6 @@ package in.ashwanthkumar.gocd.artifacts;
 
 import in.ashwanthkumar.gocd.client.types.PipelineDependency;
 import in.ashwanthkumar.utils.collections.Lists;
-import in.ashwanthkumar.utils.func.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,7 +39,7 @@ public class WhiteList {
                 hasItem(new PipelineDependency(pipeline, Integer.valueOf(version)));
 
         if (!result) {
-            LOG.debug(pipeline + "@" + version + " was not found because only the following are white listed - " + versionsForPipeline(pipeline));
+            LOG.debug("{}@{} was not found because only the following are white listed - {}", pipeline,version,versionsForPipeline(pipeline));
         }
         return result;
     }
@@ -55,12 +54,7 @@ public class WhiteList {
     }
 
     List<Integer> versionsForPipeline(String pipeline) {
-        List<Integer> versions = map(pipelines.get(pipeline), new Function<PipelineDependency, Integer>() {
-            @Override
-            public Integer apply(PipelineDependency dependency) {
-                return dependency.getVersion();
-            }
-        });
+        List<Integer> versions = map(pipelines.get(pipeline), dependency -> dependency.getVersion());
 
         Collections.sort(versions);
         return versions;

@@ -10,7 +10,8 @@ public interface Action {
     /**
      * @param pipelinePath   Path to pipelineDir
      * @param dryRun Should we just emulate this action?
+     * @param force option when you want to force a skipping of a rule
      * @return The size of the directory that was processed.
      */
-    long invoke(File pipelinePath, String versionPath, boolean dryRun);
+    long invoke(File pipelinePath, String versionPath, boolean dryRun, boolean force);
 }

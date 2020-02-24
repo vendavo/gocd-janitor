@@ -1,11 +1,14 @@
 package in.ashwanthkumar.gocd.actions;
 
+import in.ashwanthkumar.gocd.artifacts.TestUtils;
+import in.ashwanthkumar.gocd.artifacts.config.JanitorConfiguration;
 import org.junit.Test;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.HashSet;
 
 import static in.ashwanthkumar.gocd.actions.ActionUtils.createFile;
 import static org.hamcrest.CoreMatchers.is;
@@ -21,9 +24,9 @@ public class DeleteActionTest {
         String fileToDelete2 = createFile(pipelineDir, "1", "stage-2", "foo", "bar");
         String whiteListed3 = createFile(pipelineDir, "1", "stage-3", "cruise-output", "console.log");
         String fileToDelete3 = createFile(pipelineDir, "1", "stage-3", "bar", "baz");
-        DeleteAction action = new DeleteAction("cruise-output");
+        DeleteAction action = new DeleteAction(JanitorConfiguration.load(TestUtils.fileName("/test-config-default.conf")),"cruise-output");
 
-        long size = action.invoke(pipelineDir.toFile(), "1", false);
+        long size = action.invoke(pipelineDir.toFile(), "1", false, false);
         assertThat(size, is(0l));
 
         assertThat(new File(fileToDelete1).exists(), is(false));
@@ -44,9 +47,9 @@ public class DeleteActionTest {
         String fileToDelete2 = createFile(tempDirectory, "1", "stage-2", "foo", "bar");
         String whiteListed3 = createFile(tempDirectory, "1", "stage-3", "cruise-output", "console.log");
         String fileToDelete3 = createFile(tempDirectory, "1", "stage-3", "bar", "baz");
-        DeleteAction action = new DeleteAction("cruise-output");
+        DeleteAction action = new DeleteAction(JanitorConfiguration.load(TestUtils.fileName("/test-config-default.conf")),"cruise-output");
 
-        long size = action.invoke(tempDirectory.toFile(), "1", true);
+        long size = action.invoke(tempDirectory.toFile(), "1", true, false);
         assertThat(size, is(0l));
 
         assertThat(new File(fileToDelete1).exists(), is(true));
@@ -75,8 +78,8 @@ public class DeleteActionTest {
         final File expectedDeletedFile5_a_b_d = new File(createFile(pipelineDir, "3", "stage-4", "a", "b", "d", "x.txt"));
         assertThat(expectedDeletedFile5_a_b_d.exists(), is(true));
 
-        new DeleteAction().invoke(pipelineDir.toFile(), "2", false);
-        new DeleteAction("x_whiteListed.txt").invoke(pipelineDir.toFile(), "3", false);
+        new DeleteAction(JanitorConfiguration.load(TestUtils.fileName("/test-config-default.conf")),new HashSet<>()).invoke(pipelineDir.toFile(), "2", false, false);
+        new DeleteAction(JanitorConfiguration.load(TestUtils.fileName("/test-config-default.conf")),"x_whiteListed.txt").invoke(pipelineDir.toFile(), "3", false, false);
 
         assertThat(expectedDeletedFile4.getParentFile().exists(), is(false));
         assertThat(expectedDeletedFile4.getParentFile().getParentFile().exists(), is(false));

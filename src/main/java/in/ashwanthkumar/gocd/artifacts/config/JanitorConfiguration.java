@@ -4,7 +4,6 @@ import com.typesafe.config.Config;
 import com.typesafe.config.ConfigFactory;
 import in.ashwanthkumar.gocd.hocon.HoconUtils;
 import in.ashwanthkumar.utils.collections.Lists;
-import in.ashwanthkumar.utils.func.Function;
 
 import java.io.File;
 import java.util.HashSet;
@@ -25,6 +24,10 @@ public class JanitorConfiguration {
     private List<PipelineConfig> pipelines;
     private Set<String> pipelineNames;
     private String pipelinePrefix;
+    private Integer deletedLogsInDays;
+    private boolean removeLogs;
+    private boolean forceRemoveOldPipelineLogs;
+
 
     public static JanitorConfiguration load(String file) {
         return load(ConfigFactory.parseFile(new File(file)));
@@ -40,21 +43,36 @@ public class JanitorConfiguration {
                 .setServer(config.getString("server"))
                 .setArtifactStorage(config.getString("artifacts-dir"))
                 .setDefaultPipelineVersions(config.getInt("pipeline-versions"))
-                .setPipelinePrefix(HoconUtils.getString(config, "pipeline-prefix", ""));
+                .setPipelinePrefix(HoconUtils.getString(config, "pipeline-prefix", ""))
+                .setRemoveLogs(HoconUtils.getBoolean(config, "remove-logs", false))
+                .setDeletedLogsInDays(HoconUtils.getInteger(config, "delete-logs-older-than-days", 0))
+                .setForceRemoveOldPipelineLogs(HoconUtils.getBoolean(config, "force-remove-old-pipeline-logs", false));
 
         if (config.hasPath(USERNAME) && config.hasPath(PASSWORD)) {
             janitorConfiguration.setUsername(config.getString(USERNAME))
                                 .setPassword(config.getString(PASSWORD));
         }
 
-        List<PipelineConfig> pipelines = Lists.map((List<Config>) config.getConfigList("pipelines"), new Function<Config, PipelineConfig>() {
-            @Override
-            public PipelineConfig apply(Config config) {
-                return PipelineConfig.fromConfig(janitorConfiguration.getDefaultPipelineVersions(), config);
-            }
-        });
+        List<PipelineConfig> pipelines = Lists.map(config.getConfigList("pipelines"), config1 -> PipelineConfig.fromConfig(janitorConfiguration.getDefaultPipelineVersions(), config1));
 
         return janitorConfiguration.setPipelines(pipelines);
+    }
+
+    public boolean isRemoveLogs() {
+        return removeLogs;
+    }
+
+    public Integer getDeletedLogsInDays() {
+        return deletedLogsInDays;
+    }
+
+    private JanitorConfiguration setDeletedLogsInDays(Integer deletedLogsInDays) {
+        this.deletedLogsInDays = deletedLogsInDays;
+        return this;
+    }
+
+    public boolean isForceRemoveOldPipelineLogs() {
+        return forceRemoveOldPipelineLogs;
     }
 
     public String getServer() {
@@ -85,6 +103,15 @@ public class JanitorConfiguration {
         return this;
     }
 
+    public JanitorConfiguration setRemoveLogs(Boolean removeLogs) {
+        this.removeLogs = removeLogs;
+        return this;
+    }
+
+    public JanitorConfiguration setForceRemoveOldPipelineLogs(Boolean forceRemoveOldPipelineLogs) {
+        this.forceRemoveOldPipelineLogs = forceRemoveOldPipelineLogs;
+        return this;
+    }
     public String getUsername() {
         return username;
     }
@@ -139,12 +166,7 @@ public class JanitorConfiguration {
     }
 
     void setPipelineNames() {
-        this.pipelineNames = new HashSet<>(Lists.map(pipelines, new Function<PipelineConfig, String>() {
-            @Override
-            public String apply(PipelineConfig pipelineConfig) {
-                return pipelineConfig.getName();
-            }
-        }));
+        this.pipelineNames = new HashSet<>(Lists.map(pipelines, pipelineConfig -> pipelineConfig.getName()));
     }
 
     public String getPipelinePrefix() {

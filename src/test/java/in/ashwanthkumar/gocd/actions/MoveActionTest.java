@@ -43,7 +43,7 @@ public class MoveActionTest {
         createFile(pipelineDir, "1", "stage-3", "bar", "baz");
 
         MoveAction action = new MoveAction(destinationDirectory.toFile());
-        long size = action.invoke(pipelineDir.toFile(), "1", false);
+        long size = action.invoke(pipelineDir.toFile(), "1", false ,false);
         assertThat(size, is(0l));
 
         assertThat(pipelineDir.toFile().exists(), is(true));
@@ -70,7 +70,7 @@ public class MoveActionTest {
         FileUtils.deleteDirectory(destinationDirectory.toFile());
 
         MoveAction action = new MoveAction(destinationDirectory.toFile());
-        long size = action.invoke(pipelineDir.toFile(), "1", false);
+        long size = action.invoke(pipelineDir.toFile(), "1", false, false);
         assertThat(size, is(0l));
 
         assertThat(pipelineDir.toFile().exists(), is(true));
@@ -84,7 +84,7 @@ public class MoveActionTest {
         createFile(pipelineDir, "1", "stage-1", "1", "cruise-output", "console.log");
 
         MoveAction action = new MoveAction(destinationDirectory.toFile());
-        long size = action.invoke(pipelineDir.toFile(), "1", false);
+        long size = action.invoke(pipelineDir.toFile(), "1", false, false);
         assertThat(size, is(0l));
 
         assertThat(pipelineDir.toFile().exists(), is(true));
@@ -94,7 +94,7 @@ public class MoveActionTest {
 
         // Run #2
         createFile(pipelineDir, "1", "stage-1", "2", "cruise-output", "console.log");
-        size = action.invoke(pipelineDir.toFile(), "1", false);
+        size = action.invoke(pipelineDir.toFile(), "1", false, false);
         assertThat(size, is(0l));
         assertThat(pipelineDir.toFile().exists(), is(true));
         assertThat(path(pipelineDir.toFile(), "2").exists(), is(false));
