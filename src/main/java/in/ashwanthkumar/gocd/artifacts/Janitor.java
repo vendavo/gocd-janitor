@@ -105,7 +105,10 @@ public class Janitor {
 
     /* default */ List<PipelineConfig> pipelinesNotInConfiguration() throws IOException {
         return map(
-                filter(client.allPipelineNames(config.getPipelinePrefix()), pipeline -> !config.hasPipeline(pipeline)),
+                // remove pipelines that are marked to be ignored
+                filter(
+                        // get the pipelines by the prefix
+                        filter(client.allPipelineNames(config.getPipelinePrefix()), pipeline -> !config.hasPipeline(pipeline)), pipelineName -> !config.getPipelinesToIgnore().contains(pipelineName)),
                 pipelineName -> new PipelineConfig(pipelineName, config.getDefaultPipelineVersions()));
     }
 

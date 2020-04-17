@@ -24,6 +24,7 @@ public class JanitorConfiguration {
     private List<PipelineConfig> pipelines;
     private Set<String> pipelineNames;
     private String pipelinePrefix;
+    private Set<String> pipelinesToIgnore;
     private int deletedLogsInDays;
     private boolean removeLogs;
     private boolean forceRemoveOldPipelineLogs;
@@ -44,6 +45,7 @@ public class JanitorConfiguration {
                 .setArtifactStorage(config.getString("artifacts-dir"))
                 .setDefaultPipelineVersions(config.getInt("pipeline-versions"))
                 .setPipelinePrefix(HoconUtils.getString(config, "pipeline-prefix", ""))
+                .setPipelinesToIgnore(new HashSet<>(HoconUtils.getStringListOrEmpty(config, "pipelines-to-ignore")))
                 .setRemoveLogs(HoconUtils.getBoolean(config, "remove-logs", false))
                 .setDeletedLogsInDays(HoconUtils.getInteger(config, "delete-logs-older-than-days", 0))
                 .setForceRemoveOldPipelineLogs(HoconUtils.getBoolean(config, "force-remove-old-pipeline-logs", false));
@@ -171,5 +173,15 @@ public class JanitorConfiguration {
 
     public String getPipelinePrefix() {
         return pipelinePrefix;
+    }
+
+    public Set<String> getPipelinesToIgnore() {
+        if(pipelinesToIgnore != null) return pipelinesToIgnore;
+        else return new HashSet<>();
+    }
+
+    public JanitorConfiguration setPipelinesToIgnore(Set<String> pipelinesToIgnore) {
+        this.pipelinesToIgnore = pipelinesToIgnore;
+        return this;
     }
 }
