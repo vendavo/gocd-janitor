@@ -67,20 +67,17 @@ public class DeleteAction implements Action {
 
         if (files != null) {
             for (File file : files) {
-                try {
-                    if (!FileUtils.isSymlink(file) && isNotWhiteListed(file)) {
+                if (!FileUtils.isSymlink(file) && isNotWhiteListed(file)) {
 
-                        if (file.isDirectory()) {
-                            if (!force && (janitorConfiguration.getDeletedLogsInDays() > 0 && isDirLog(file) && retainFile(file))) {
-                                //NOACTION
-                            } else {
-                                stats.add(getDirectoryStats(file, force));
-                            }
+                    if (file.isDirectory()) {
+                        if (!force && (janitorConfiguration.getDeletedLogsInDays() > 0 && isDirLog(file) && retainFile(file))) {
+                            //NOACTION
                         } else {
-                            stats.add(file);
+                            stats.add(getDirectoryStats(file, force));
                         }
+                    } else {
+                        stats.add(file);
                     }
-                } catch (IOException ignored) {
                 }
             }
         }
